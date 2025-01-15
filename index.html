@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trivia Game</title>
+    <link rel="stylesheet" href="./css/index.css" />
+  </head>
+  <body>
+    <nav>
+      <div class="dropdown">
+        <button class="dropdown-btn">Manage Questions</button>
+        <div class="dropdown-content">
+          <button onclick="location.href='pages/add-question.html'">
+            Add Question
+          </button>
+          <button onclick="location.href='pages/delete-question.html'">
+            Delete Question
+          </button>
+          <button onclick="location.href='pages/edit-question.html'">
+            Edit Question
+          </button>
+        </div>
+      </div>
+      <button
+        class="leaderboard-btn"
+        onclick="location.href='pages/leaderboard.html'">
+        Leaderboard
+      </button>
+    </nav>
+    <div id="app">
+      <h1>Trivia</h1>
+      <div id="game-container">
+        <div class="category-card" onclick="startGame('sports')">
+          <img src="./images/sports.jpg" alt="Sports" class="category-image" />
+          <h3>Sports</h3>
+        </div>
+        <div class="category-card" onclick="startGame('history')">
+          <img
+            src="./images/history.jpg"
+            alt="History"
+            class="category-image" />
+          <h3>History</h3>
+        </div>
+        <div class="category-card" onclick="startGame('geography')">
+          <img
+            src="./images/geography.jpeg"
+            alt="Geography"
+            class="category-image" />
+          <h3>Geography</h3>
+        </div>
+      </div>
+      <div id="question-container" style="display: none">
+        <h2 id="question"></h2>
+        <ul id="options"></ul>
+        <button id="next-btn" onclick="nextQuestion()">Next</button>
+      </div>
+    </div>
+    <div id="end-container" style="display: none">
+      <h2 id="final-score"></h2>
+      <form id="save-score-form">
+        <label for="username">Enter Your Name:</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Your Name"
+          required />
+        <button type="submit">Save Score</button>
+      </form>
+    </div>
+    <script src="./js/script.js"></script>
+  </body>
+</html>
