@@ -86,4 +86,40 @@ router.get("/questions/:category/:id", async (req, res, next) => {
   }
 });
 
+router.post("/questions", async (req, res, next) => {
+  const { category, question, options, answer } = req.body;
+
+  try {
+    const questionData = await Question.findOne({
+      "categories.name": category,
+    });
+
+    if (!questionData) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const selectedCategory = questionData.categories.find(
+      (cat) => cat.name === category
+    );
+
+    if (!selectedCategory) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const newQuestion = {
+      id: selectedCategory.questions.length + 1,
+      question,
+      options,
+      answer,
+    };
+
+    selectedCategory.questions.push(newQuestion);
+    await questionData.save();
+
+    res.status(201).json(newQuestion);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
