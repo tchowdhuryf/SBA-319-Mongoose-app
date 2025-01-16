@@ -86,6 +86,7 @@ router.get("/questions/:category/:id", async (req, res, next) => {
   }
 });
 
+//POST ROUTE
 router.post("/questions/:category", async (req, res, next) => {
   const { category } = req.params;
   const { question, options, answer } = req.body;
@@ -123,6 +124,7 @@ router.post("/questions/:category", async (req, res, next) => {
   }
 });
 
+//DELETE ROUTE
 router.delete("/questions/:category/:id", async (req, res, next) => {
   const { category, id } = req.params;
 
@@ -158,6 +160,85 @@ router.delete("/questions/:category/:id", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+router.patch("/questions/:category/:id", async (req, res) => {
+  const { category, id } = req.params;
+  const { question, options, answer } = req.body;
+
+  const questionData = await Question.findOne({ "categories.name": category });
+  if (!questionData) {
+    return res.status(404).json({ error: "Category not found" });
+  }
+
+  const selectedCategory = questionData.categories.find(
+    (cat) => cat.name === category
+  );
+  if (!selectedCategory) {
+    return res.status(404).json({ error: "Category not found" });
+  }
+
+  const selectedQuestion = selectedCategory.questions.find(
+    (q) => q.id === Number(id)
+  );
+  if (!selectedQuestion) {
+    return res.status(404).json({ error: "Question not found" });
+  }
+
+  // Update only the provided fields
+  if (question !== undefined) selectedQuestion.question = question;
+  if (options !== undefined) selectedQuestion.options = options;
+  if (answer !== undefined) selectedQuestion.answer = answer;
+
+  await questionData.save();
+
+  res.status(200).json({
+    message: "Question updated successfully",
+    question: selectedQuestion,
+  });
+});
+
+// PUT route: Replace an entire question object
+router.put("/questions/:category/:id", async (req, res) => {
+  const { category, id } = req.params;
+  const { question, options, answer } = req.body;
+
+  if (!question || !options || !answer) {
+    return res
+      .status(400)
+      .json({ error: "All fields (question, options, answer) are required" });
+  }
+
+  const questionData = await Question.findOne({ "categories.name": category });
+  if (!questionData) {
+    return res.status(404).json({ error: "Category not found" });
+  }
+
+  const selectedCategory = questionData.categories.find(
+    (cat) => cat.name === category
+  );
+  if (!selectedCategory) {
+    return res.status(404).json({ error: "Category not found" });
+  }
+
+  const selectedQuestion = selectedCategory.questions.find(
+    (q) => q.id === Number(id)
+  );
+  if (!selectedQuestion) {
+    return res.status(404).json({ error: "Question not found" });
+  }
+
+  // Replace the entire question object
+  selectedQuestion.question = question;
+  selectedQuestion.options = options;
+  selectedQuestion.answer = answer;
+
+  await questionData.save();
+
+  res.status(200).json({
+    message: "Question replaced successfully",
+    question: selectedQuestion,
+  });
 });
 
 module.exports = router;
