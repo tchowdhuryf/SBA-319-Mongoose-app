@@ -6,12 +6,15 @@ const conn = require("./config/db");
 conn();
 const Question = require("./models/question");
 const questionsSeed = require("./config/questionsSeed");
+const questionRoutes = require("./routes/questionRoutes");
 
 app.use(express.json());
 app.use(express.static(__dirname));
 
+app.use("/api", questionRoutes);
+
 app.get("/", (req, res) => {
-  res.sendFile(__dirname, "/index.html");
+  res.sendFile(__dirname, "index.html");
 });
 
 const seedDatabase = async () => {
@@ -34,7 +37,6 @@ const seedDatabase = async () => {
   }
 };
 
-// Run the seed script
 seedDatabase();
 
 app.listen(port, () => {
