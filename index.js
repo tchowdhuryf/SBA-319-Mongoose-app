@@ -14,24 +14,28 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname, "/index.html");
 });
 
-app.get("/questions/seed", async (req, res) => {
+const seedDatabase = async () => {
   try {
     await Question.deleteMany({});
-    await Question.create(questionsSeed)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    console.log("Existing data cleared.");
 
-    res.json(questionsSeed);
-  } catch (error) {
-    console.log(
-      `Something went wrong with loading seed data: ${error.message}`
+    const categories = Object.keys(questionsSeed.categories).map(
+      (categoryName) => ({
+        name: categoryName,
+        questions: questionsSeed.categories[categoryName],
+      })
     );
+
+    const question = new Question({ categories });
+    await question.save();
+    console.log("Database seeded successfully.");
+  } catch (error) {
+    console.error("Error seeding the database:", error);
   }
-});
+};
+
+// Run the seed script
+seedDatabase();
 
 app.listen(port, () => {
   console.log(`Trivia app running at http://localhost:${port}`);
