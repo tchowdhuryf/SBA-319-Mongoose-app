@@ -25,20 +25,20 @@ form.addEventListener("submit", (event) => {
     answer: form.answer.value,
   };
 
-  fetch("/api/questions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ category, ...questionData }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.error) {
-        alert(data.error);
-      } else {
-        alert("Question added successfully!");
-        form.reset();
-      }
-    });
+    fetch(`/api/questions/${category}`, {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ category, ...questionData }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            alert("Question added successfully!");
+            form.reset();
+        }
+        });
 });

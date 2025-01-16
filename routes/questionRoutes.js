@@ -86,8 +86,9 @@ router.get("/questions/:category/:id", async (req, res, next) => {
   }
 });
 
-router.post("/questions", async (req, res, next) => {
-  const { category, question, options, answer } = req.body;
+router.post("/questions/:category", async (req, res, next) => {
+  const { category } = req.params;
+  const { question, options, answer } = req.body;
 
   try {
     const questionData = await Question.findOne({
@@ -116,7 +117,44 @@ router.post("/questions", async (req, res, next) => {
     selectedCategory.questions.push(newQuestion);
     await questionData.save();
 
-    res.status(201).json(newQuestion);
+    res.json(newQuestion);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete("/questions/:category/:id", async (req, res, next) => {
+  const { category, id } = req.params;
+
+  try {
+    const questionData = await Question.findOne({
+      "categories.name": category,
+    });
+
+    if (!questionData) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const selectedCategory = questionData.categories.find(
+      (cat) => cat.name === category
+    );
+
+    if (!selectedCategory) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const selectedQuestionIndex = selectedCategory.questions.findIndex(
+      (question) => question.id === Number(id)
+    );
+
+    if (selectedQuestionIndex === -1) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+
+    selectedCategory.questions.splice(selectedQuestionIndex, 1);
+    await questionData.save();
+
+    res.json({ message: "Question deleted" });
   } catch (error) {
     next(error);
   }
